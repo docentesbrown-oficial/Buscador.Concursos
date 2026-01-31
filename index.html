@@ -4,11 +4,12 @@
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>Concursos Vigentes</title>
+  <meta name="theme-color" content="#24496e" />
 
   <!-- Íconos para navegador y acceso directo -->
   <link rel="icon" href="icono.png" type="image/png">
   <link rel="apple-touch-icon" href="icono.png">
-  <link rel="manifest" href="manifest.json">
+  <link rel="manifest" href="manifest.webmanifest">
 
   <!-- Librerías -->
   <script src="https://cdn.jsdelivr.net/npm/papaparse@5.4.1/papaparse.min.js"></script>
@@ -16,57 +17,241 @@
 
   <!-- Estilos -->
   <style>
-    body {
-      background-color: #f3efdc;
-      color: #4d3069;
-    }
-    select, button {
-      color: #4d3069;
-    }
-    .contador {
-      margin-top: 2rem;
-      font-size: 0.9rem;
-      background-color: #da6863;
-      color: white;
-      display: inline-block;
-      padding: 0.4rem 1rem;
-      border-radius: 12px;
-      box-shadow: 0 2px 5px rgba(0,0,0,0.2);
-    }
-  </style>
+  :root{
+    --c-ink:#2c1d3b;
+    --c-primary:#24496e;
+    --c-secondary:#4d3069;
+    --c-accent:#3d8fb0;
+    --c-warm:#da6863;
+    --c-bg:#f3efdc;
+    --card:#ffffff;
+  }
+
+  html,body{height:100%}
+  body{
+    background:
+      radial-gradient(1200px 800px at 20% -10%, rgba(61,143,176,.22), transparent 60%),
+      radial-gradient(900px 600px at 110% 20%, rgba(218,104,99,.18), transparent 55%),
+      radial-gradient(900px 600px at 40% 120%, rgba(77,48,105,.14), transparent 55%),
+      var(--c-bg);
+    color: var(--c-ink);
+  }
+
+  /* Inputs */
+  select{
+    background: rgba(255,255,255,.9);
+    border: 1px solid rgba(36,73,110,.25);
+    border-radius: 16px;
+    padding: 16px 16px;
+    font-size: 16px;
+    line-height: 1.25;
+    box-shadow: 0 8px 24px rgba(36,73,110,.08);
+    outline: none;
+  }
+  select:focus{
+    border-color: rgba(61,143,176,.8);
+    box-shadow: 0 0 0 4px rgba(61,143,176,.20), 0 12px 30px rgba(36,73,110,.12);
+  }
+
+  /* Soft card */
+  .soft-card{
+    background: rgba(255,255,255,.92);
+    border: 1px solid rgba(36,73,110,.10);
+    border-radius: 24px;
+    box-shadow: 0 18px 50px rgba(36,73,110,.10);
+    backdrop-filter: blur(8px);
+  }
+
+  /* Fancy button */
+  .btn-primary{
+    background: linear-gradient(135deg, rgba(36,73,110,1), rgba(61,143,176,1));
+    color:#fff;
+    border-radius: 18px;
+    box-shadow: 0 14px 32px rgba(36,73,110,.22);
+  }
+  .btn-primary:active{ transform: translateY(1px); }
+
+  
+  /* Info rows (same hierarchy for all key fields) */
+  .info-row{
+    display:flex;
+    align-items:flex-start;
+    gap:12px;
+  }
+  .info-ico{
+    margin-top: 2px;
+    width: 22px;
+    flex: 0 0 22px;
+    text-align:center;
+    font-size: 1.05rem;
+    line-height: 1;
+  }
+  .info-title{
+    font-weight: 700;
+    font-size: .98rem;
+    line-height: 1.2;
+    letter-spacing: .1px;
+  }
+  .info-value{
+    opacity: .90;
+    font-size: .98rem;
+    line-height: 1.3;
+    margin-top: 2px;
+    word-break: break-word;
+  }
+  @media (min-width: 768px){
+    .info-title, .info-value{ font-size: 1rem; }
+  }
+
+.chip{
+    display:inline-flex;
+    align-items:center;
+    gap:.4rem;
+    padding:.35rem .65rem;
+    border-radius: 999px;
+    border: 1px solid rgba(36,73,110,.14);
+    background: rgba(255,255,255,.75);
+    font-size: .80rem;
+  }
+
+  /* Floating favorites FAB */
+  #favFab{
+    position: fixed;
+    left: 50%;
+    transform: translateX(-50%);
+    bottom: 16px;
+    z-index: 9999;
+    display: none;
+    align-items: center;
+    gap: 10px;
+    padding: 12px 14px;
+    border-radius: 999px;
+    border: 1px solid rgba(255,255,255,.45);
+    background: rgba(36,73,110,.92);
+    color: #fff;
+    box-shadow: 0 18px 45px rgba(36,73,110,.28);
+    backdrop-filter: blur(10px);
+  }
+  #favFab .label{
+    font-weight: 700;
+    letter-spacing: .2px;
+  }
+  #favFab .pill{
+    background: rgba(255,255,255,.14);
+    border: 1px solid rgba(255,255,255,.18);
+    padding: 6px 10px;
+    border-radius: 999px;
+    font-weight: 700;
+    display: inline-flex;
+    gap: 6px;
+    align-items:center;
+  }
+  #favFab[data-active="true"]{
+    background: rgba(77,48,105,.92);
+  }
+
+  /* Nice scrollbar (desktop only) */
+  @media (min-width: 768px){
+    ::-webkit-scrollbar{ width: 10px; }
+    ::-webkit-scrollbar-thumb{ background: rgba(36,73,110,.25); border-radius: 99px; }
+  }
+
+  /* Counter pill */
+  .contador{
+    margin-top: 1.25rem;
+    font-size: 0.9rem;
+    background-color: rgba(218,104,99,.95);
+    color: white;
+    display: inline-block;
+    padding: 0.45rem 1rem;
+    border-radius: 999px;
+    box-shadow: 0 10px 24px rgba(218,104,99,.25);
+  }
+
+  /* Subtle appear animation */
+  .fade-in{
+    animation: fadeIn .25s ease-out both;
+  }
+  @keyframes fadeIn{
+    from{ opacity:0; transform: translateY(6px); }
+    to{ opacity:1; transform: translateY(0); }
+  }
+</style>
 </head>
-<body class="min-h-screen p-4">
-  <div class="max-w-4xl mx-auto">
-    <h1 class="text-3xl font-bold text-center mb-1" style="color: #24496e">Concursos Vigentes</h1>
-    <p class="text-center text-sm mb-6">
-  Desarrollado y optimizado por Docentes Brown. Si tu <strong>carrera o profesión</strong> no aparece en el filtro automáticamente, es porque <strong>no hay</strong> concursos informados.
-  Seguinos en Instagram <a href="https://www.instagram.com/docentesbrown" target="_blank" class="text-blue-600 hover:underline">@docentesbrown</a>.
-    </p>
-    <!-- Filtros -->
-    <div class="space-y-4 mb-6">
-      <select id="campoSelect" class="w-full p-2 rounded border border-[#4d3069]" onchange="actualizarTitulos()">
-        <option value="">Seleccioná un Campo</option>
-      </select>
+<body class="min-h-screen">
+  <div class="max-w-4xl mx-auto px-4 pt-4 pb-24">
+    <!-- Header / Hero -->
+    <header class="soft-card p-5 md:p-7">
+      <div class="flex items-start justify-between gap-4">
+        <div class="min-w-0">
+          <div class="flex items-center gap-3">
+            
+            <div class="min-w-0">
+              <h1 class="text-2xl md:text-3xl font-extrabold leading-tight" style="color: var(--c-primary)">
+                Concursos Vigentes
+              </h1>
+              <p class="text-sm md:text-base mt-1 opacity-85">
+                Encontrá tu oferta en segundos — rápido, claro y pensado para el celu.
+              </p>
+            </div>
+          </div>
 
-      <select id="tituloSelect" class="w-full p-2 rounded border border-[#4d3069] hidden" onchange="actualizarDistritos()">
-        <option value="">Seleccioná un Título</option>
-      </select>
+          <p class="text-[0.95rem] mt-4 leading-relaxed opacity-90">
+            Desarrollado y optimizado por <strong>Docentes Brown</strong>.
+            Si tu <strong>carrera o profesión</strong> no aparece automáticamente, es porque <strong>no hay</strong> concursos informados.
+            Seguinos en Instagram
+            <a href="https://www.instagram.com/docentesbrown" target="_blank" class="font-bold underline" style="color: var(--c-accent)">@docentesbrown</a>.
+          </p>
+        </div>
 
-      <select id="distritoSelect" class="w-full p-2 rounded border border-[#4d3069] hidden">
-        <option value="">Seleccioná un Distrito</option>
-      </select>
+        <a href="https://cafecito.app/docentesbrown" target="_blank"
+           class="hidden md:inline-flex items-center gap-2 px-4 py-3 rounded-2xl font-extrabold"
+           style="background: rgba(77,48,105,.12); border:1px solid rgba(77,48,105,.25); color: var(--c-secondary)">
+          ☕ Cafecito
+        </a>
+      </div>
+
+      <!-- Filters -->
+      <div class="mt-6 grid gap-4">
+        <div class="text-sm md:text-base font-extrabold uppercase tracking-wider opacity-70">Filtrá y buscá</div>
+
+        <select id="campoSelect" class="w-full text-base" onchange="actualizarTitulos()">
+          <option value="">1) Seleccioná un Campo</option>
+        </select>
+
+        <select id="tituloSelect" class="w-full text-base hidden" onchange="actualizarDistritos()">
+          <option value="">2) Seleccioná un Título</option>
+        </select>
+
+        <select id="distritoSelect" class="w-full text-base hidden">
+          <option value="">3) Seleccioná un Distrito</option>
+        </select>
+
+        <button onclick="filtrarOfertas()" class="btn-primary w-full font-extrabold py-4 px-4 text-base md:text-lg">
+          🔎 Buscar ofertas activas
+        </button>
+
+        <div class="flex items-center justify-between gap-3 text-xs md:text-sm opacity-80">
+          <div>Tip: marcá ⭐ y te quedan primero.</div>
+          <div class="hidden md:block">Abrí “Agregar recordatorio” para tu calendario.</div>
+        </div>
+      </div>
+    </header>
+
+    <!-- Results header -->
+    <div class="mt-6 flex items-center justify-between gap-3">
+      <h2 class="text-lg md:text-xl font-extrabold" style="color: var(--c-primary)">Resultados</h2>
+      <div class="chip">🧠 Favoritos se guardan en tu dispositivo</div>
     </div>
 
-    <button onclick="filtrarOfertas()" class="bg-[#24496e] hover:bg-[#1b3552] text-white font-semibold px-4 py-2 rounded mb-6 w-full">
-      BUSCAR OFERTAS ACTIVAS
-    </button>
-
     <!-- Resultados -->
-    <div id="resultados" class="space-y-4"></div>
+    <div id="resultados" class="mt-3 space-y-4"></div>
 
-    <!-- Botón de Cafecito -->
+    <!-- Botón de Cafecito (mobile) -->
     <div id="cafecitoBtnContainer" class="text-center mt-8 hidden">
-      <a href="https://cafecito.app/docentesbrown" target="_blank" class="inline-flex items-center bg-[#4d3069] hover:bg-[#3a2552] text-white font-bold py-2 px-4 rounded-full">
+      <a href="https://cafecito.app/docentesbrown" target="_blank"
+         class="inline-flex items-center gap-2 px-5 py-3 rounded-full font-extrabold"
+         style="background: rgba(77,48,105,.92); color:#fff; box-shadow: 0 14px 28px rgba(77,48,105,.22);">
         ☕ Invitanos un Cafecito
       </a>
     </div>
@@ -75,19 +260,259 @@
     <div class="text-center mt-10">
       <span class="contador">Docentes que pasaron por acá: <span id="contador">...</span></span>
     </div>
+
+    <div class="text-center mt-4 text-xs opacity-70">
+      Hecho con 💜 para que buscar sea un placer.
+    </div>
   </div>
 
-  <!-- Scripts -->
+  
+<!-- Scripts -->
   <script>
     const sheetURL = "https://docs.google.com/spreadsheets/d/e/2PACX-1vRyqgjE9sIIl7fEjrmVzsQo7lCc8w6Nw4EKqcbrqsT-gUDXt_YHn4tHIZJJ7eAEr9JNlJvTW16r7Fyk/pub?output=csv";
     let datos = [];
+    let headers = [];
+
+    // Helpers (sin tocar la lógica de filtros)
+    function getValueCI(obj, nombreColumna) {
+      const key = Object.keys(obj || {}).find(k => (k || "").trim().toLowerCase() === nombreColumna.toLowerCase());
+      const val = key ? obj[key] : "";
+      return (val || "").toString().trim();
+    }
+
+    function obtenerFechasInscripcionTexto(oferta) {
+      // Intenta encontrar "Fechas de inscripción" aunque el encabezado varíe
+      const posibles = [
+        "Fechas de inscripción",
+        "Fechas Inscripción",
+        "Inscripción",
+        "Inscripcion",
+        "Inscripción desde",
+        "Inscripcion desde",
+        "Inscripción hasta",
+        "Inscripcion hasta",
+        "Fecha de inscripción",
+        "Fecha de inscripcion",
+        "Cierre de inscripción",
+        "Cierre de inscripcion"
+      ];
+
+      // 1) Campo directo por encabezado
+      for (const nombre of posibles) {
+        const v = getValueCI(oferta, nombre);
+        if (v) return v;
+      }
+
+      // 2) Si no hay encabezado exacto, buscá por contains en keys
+      const keys = Object.keys(oferta || {});
+      const k = keys.find(k => (k || "").toLowerCase().includes("inscrip"));
+      if (k && oferta[k]) return (oferta[k] || "").toString().trim();
+
+      return "";
+    }
+
+    function parsearFechasDeTexto(texto) {
+      if (!texto) return [];
+      const t = texto.toString();
+
+      // Formatos: dd/mm/yyyy, dd-mm-yyyy, yyyy-mm-dd
+      const re = /(\b\d{1,2}[\/\-]\d{1,2}[\/\-]\d{2,4}\b)|(\b\d{4}-\d{2}-\d{2}\b)/g;
+      const matches = t.match(re) || [];
+      const fechas = [];
+
+      for (const raw of matches) {
+        const s = raw.trim();
+        let d = null;
+
+        if (/^\d{4}-\d{2}-\d{2}$/.test(s)) {
+          const [y, m, day] = s.split("-").map(Number);
+          d = new Date(y, m - 1, day);
+        } else {
+          const parts = s.split(/[\/\-]/).map(Number);
+          if (parts.length === 3) {
+            let [day, m, y] = parts;
+            if (y < 100) y = 2000 + y;
+            d = new Date(y, m - 1, day);
+          }
+        }
+
+        if (d && !isNaN(d.getTime())) fechas.push(d);
+      }
+
+      // Ordenadas
+      fechas.sort((a, b) => a.getTime() - b.getTime());
+      return fechas;
+    }
+
+    function formatICSDate(d) {
+      // YYYYMMDD
+      const y = d.getFullYear().toString().padStart(4, "0");
+      const m = (d.getMonth() + 1).toString().padStart(2, "0");
+      const day = d.getDate().toString().padStart(2, "0");
+      return `${y}${m}${day}`;
+    }
+
+    function escapeICS(text) {
+      return (text || "")
+        .toString()
+        .replace(/\\/g, "\\\\")
+        .replace(/\n/g, "\\n")
+        .replace(/\r/g, "")
+        .replace(/;/g, "\\;")
+        .replace(/,/g, "\\,");
+    }
+
+    function buildICS({ title, description, date }) {
+      // Evento de día completo en "date", termina al día siguiente
+      const dtStart = new Date(date.getFullYear(), date.getMonth(), date.getDate());
+      const dtEnd = new Date(dtStart.getTime());
+      dtEnd.setDate(dtEnd.getDate() + 1);
+
+      const dtstamp = new Date().toISOString().replace(/[-:]/g, "").split(".")[0] + "Z";
+      const uid = `${Date.now()}-${Math.random().toString(16).slice(2)}@docentesbrown`;
+
+      return [
+        "BEGIN:VCALENDAR",
+        "VERSION:2.0",
+        "PRODID:-//Docentes Brown//Concursos Vigentes//ES",
+        "CALSCALE:GREGORIAN",
+        "METHOD:PUBLISH",
+        "BEGIN:VEVENT",
+        `UID:${uid}`,
+        `DTSTAMP:${dtstamp}`,
+        `SUMMARY:${escapeICS(title)}`,
+        `DESCRIPTION:${escapeICS(description)}`,
+        `DTSTART;VALUE=DATE:${formatICSDate(dtStart)}`,
+        `DTEND;VALUE=DATE:${formatICSDate(dtEnd)}`,
+        "BEGIN:VALARM",
+        "TRIGGER:-P1D",
+        "ACTION:DISPLAY",
+        "DESCRIPTION:Recordatorio inscripción",
+        "END:VALARM",
+        "END:VEVENT",
+        "END:VCALENDAR"
+      ].join("\r\n");
+    }
+
+    
+    function buildICSRange({ title, description, startDate, endDate }) {
+      // Evento de día completo desde startDate hasta endDate (inclusive). DTEND es exclusivo.
+      const dtStart = new Date(startDate.getFullYear(), startDate.getMonth(), startDate.getDate());
+      const dtEnd = new Date(endDate.getFullYear(), endDate.getMonth(), endDate.getDate());
+      dtEnd.setDate(dtEnd.getDate() + 1);
+
+      const dtstamp = new Date().toISOString().replace(/[-:]/g, "").split(".")[0] + "Z";
+      const uid = `${Date.now()}-${Math.random().toString(16).slice(2)}@docentesbrown`;
+
+      return [
+        "BEGIN:VCALENDAR",
+        "VERSION:2.0",
+        "PRODID:-//Docentes Brown//Concursos Vigentes//ES",
+        "CALSCALE:GREGORIAN",
+        "METHOD:PUBLISH",
+        "BEGIN:VEVENT",
+        `UID:${uid}`,
+        `DTSTAMP:${dtstamp}`,
+        `SUMMARY:${escapeICS(title)}`,
+        `DESCRIPTION:${escapeICS(description)}`,
+        `DTSTART;VALUE=DATE:${formatICSDate(dtStart)}`,
+        `DTEND;VALUE=DATE:${formatICSDate(dtEnd)}`,
+        "BEGIN:VALARM",
+        "TRIGGER:-P1D",
+        "ACTION:DISPLAY",
+        "DESCRIPTION:Recordatorio inscripción",
+        "END:VALARM",
+        "END:VEVENT",
+        "END:VCALENDAR"
+      ].join("\r\n");
+    }
+
+    function parsearFechaCelda(valor) {
+      // Acepta Date, 'YYYY-MM-DD', 'DD/MM/YYYY', 'DD-MM-YYYY'
+      if (!valor) return null;
+      if (valor instanceof Date && !isNaN(valor)) return valor;
+
+      const s = String(valor).trim();
+      if (!s) return null;
+
+      // ISO
+      let m = s.match(/^(\d{4})-(\d{1,2})-(\d{1,2})/);
+      if (m) {
+        const y = parseInt(m[1], 10), mo = parseInt(m[2], 10) - 1, d = parseInt(m[3], 10);
+        const dt = new Date(y, mo, d);
+        return isNaN(dt) ? null : dt;
+      }
+
+      // LatAm
+      m = s.match(/^(\d{1,2})[\/\-](\d{1,2})[\/\-](\d{4})/);
+      if (m) {
+        const d = parseInt(m[1], 10), mo = parseInt(m[2], 10) - 1, y = parseInt(m[3], 10);
+        const dt = new Date(y, mo, d);
+        return isNaN(dt) ? null : dt;
+      }
+
+      // Fallback Date.parse
+      const t = Date.parse(s);
+      if (!isNaN(t)) return new Date(t);
+
+      return null;
+    }
+function descargarICS(filename, contenido) {
+      const blob = new Blob([contenido], { type: "text/calendar;charset=utf-8" });
+      const url = URL.createObjectURL(blob);
+      const a = document.createElement("a");
+      a.href = url;
+      a.download = filename;
+      document.body.appendChild(a);
+      a.click();
+      a.remove();
+      setTimeout(() => URL.revokeObjectURL(url), 1000);
+    }
+
+    function agendarInscripcion(ofertaEncoded) {
+      try {
+        const oferta = JSON.parse(decodeURIComponent(ofertaEncoded));
+        // Fechas de inscripción: columna N (desde) y O (hasta)
+        const colDesde = headers && headers.length > 13 ? headers[13] : null; // N
+        const colHasta = headers && headers.length > 14 ? headers[14] : null; // O
+        const desdeRaw = colDesde ? oferta[colDesde] : null;
+        const hastaRaw = colHasta ? oferta[colHasta] : null;
+
+        const desde = parsearFechaCelda(desdeRaw);
+        const hasta = parsearFechaCelda(hastaRaw) || desde;
+
+        if (!desde) {
+          alert("No pude leer la FECHA DESDE (columna N) para esta oferta. Revisá que tenga un formato tipo 2026-01-30 o 30/01/2026.");
+          return;
+        }
+
+        const insc = `${desdeRaw || "—"} a ${hastaRaw || desdeRaw || "—"}`;
+
+        const titulo = `Inscripción: ${getValueCI(oferta, "Unidad Curricular") || "Concurso"}`;
+        const desc = [
+          `Institución: ${getValueCI(oferta, "Institución")}`,
+          `Distrito: ${getValueCI(oferta, "Distrito")}`,
+          `Carrera: ${getValueCI(oferta, "Carrera")}`,
+          `Fechas de inscripción: ${insc || "—"}`
+        ].join("\n");
+
+        const ics = buildICSRange({ title: titulo, description: desc, startDate: desde, endDate: hasta });
+        const fname = `inscripcion_${(getValueCI(oferta, "Unidad Curricular") || "concurso").replace(/[^a-z0-9]+/gi, "_").toLowerCase()}.ics`;
+        descargarICS(fname, ics);
+      } catch (e) {
+        console.error(e);
+        alert("Hubo un problema al crear el evento de calendario.");
+      }
+    }
 
     fetch(sheetURL)
       .then(response => response.text())
       .then(csvText => {
         const parsed = Papa.parse(csvText, { header: true });
+        headers = (parsed.meta && parsed.meta.fields) ? parsed.meta.fields : [];
         datos = parsed.data.filter(row => typeof row === 'object' && row["Campo"] && row["Título"] && row["Distrito"]);
         cargarCampos();
+        updateFavFab();
       });
 
     function cargarCampos() {
@@ -138,6 +563,79 @@
       }
     }
 
+    
+    // === Favoritos (localStorage) ===
+    const FAVORITOS_KEY = "favoritos_concursos";
+
+    let mostrarSoloFavoritos = false;
+
+    function toggleFavoritosView(){
+      mostrarSoloFavoritos = !mostrarSoloFavoritos;
+      updateFavFab();
+      filtrarOfertas();
+      const res = document.getElementById("resultados");
+      if(res) window.scrollTo({ top: Math.max(0, res.offsetTop - 10), behavior: "smooth" });
+    }
+
+    function updateFavFab(){
+      const btn = document.getElementById("favFab");
+      if(!btn) return;
+
+      const favs = getFavoritos();
+      const countEl = btn.querySelector(".count");
+      if(countEl) countEl.textContent = String(favs.length);
+
+      btn.dataset.active = mostrarSoloFavoritos ? "true" : "false";
+      const labelEl = btn.querySelector(".label");
+      if(labelEl) labelEl.textContent = mostrarSoloFavoritos ? "Ver todo" : "Solo favoritos";
+
+      // Ocultar si no hay favoritos
+      btn.style.display = favs.length > 0 ? "flex" : "none";
+    }
+
+    function getFavoritos() {
+      try { return JSON.parse(localStorage.getItem(FAVORITOS_KEY) || "[]"); }
+      catch(e){ return []; }
+    }
+
+    function setFavoritos(arr) {
+      localStorage.setItem(FAVORITOS_KEY, JSON.stringify(arr || []));
+    }
+
+    function buildOfertaId(oferta){
+      // ID estable (no depende del orden): combina campos típicos + N/O para diferenciar
+      const colEntregaDesde = headers && headers.length > 13 ? headers[13] : null; // N
+      const colEntregaHasta = headers && headers.length > 14 ? headers[14] : null; // O
+      const n = colEntregaDesde ? (oferta[colEntregaDesde] || "") : "";
+      const o = colEntregaHasta ? (oferta[colEntregaHasta] || "") : "";
+      const parts = [
+        oferta["Unidad Curricular"] || "",
+        oferta["Institución"] || "",
+        oferta["Distrito"] || "",
+        oferta["Carrera"] || "",
+        n, o
+      ];
+      return parts.map(x => String(x).trim()).join(" | ");
+    }
+
+    function isFavorite(id){
+      return getFavoritos().includes(id);
+    }
+
+    function toggleFavorite(id){
+      let favs = getFavoritos();
+      if(favs.includes(id)){
+        favs = favs.filter(x => x !== id);
+      } else {
+        favs.unshift(id);
+      }
+      setFavoritos(favs);
+      updateFavFab();
+      // Re-render respetando filtros actuales
+      filtrarOfertas();
+    }
+
+
     function filtrarOfertas() {
       const campo = document.getElementById("campoSelect").value;
       const titulo = document.getElementById("tituloSelect").value;
@@ -151,36 +649,172 @@
                (!distrito || row["Distrito"] === distrito);
       });
 
-      if (ofertas.length === 0) {
-        resultadosDiv.innerHTML = "<p class='text-center text-gray-500'>No se encontraron ofertas activas.</p>";
+      // IDs + ordenar favoritos primero
+      const favs = getFavoritos();
+      ofertas.forEach(o => { o.__id = buildOfertaId(o); });
+
+      // Si está activado "Solo favoritos", filtramos acá
+      let ofertasVisibles = ofertas;
+      if (mostrarSoloFavoritos) {
+        ofertasVisibles = ofertas.filter(o => favs.includes(o.__id));
+      }
+
+      // Orden: favoritos primero y, si ambos son favoritos, respeta el orden guardado (más reciente arriba)
+      ofertasVisibles.sort((a,b) => {
+        const ai = favs.indexOf(a.__id);
+        const bi = favs.indexOf(b.__id);
+        const aFav = ai !== -1;
+        const bFav = bi !== -1;
+
+        if (aFav && bFav) return ai - bi; // respeta orden del array favs (0 = más arriba)
+        if (aFav !== bFav) return aFav ? -1 : 1;
+
+        // orden secundario estable por Unidad Curricular
+        return String(a["Unidad Curricular"]||"").localeCompare(String(b["Unidad Curricular"]||""), "es", {sensitivity:"base"});
+      });
+
+if (ofertasVisibles.length === 0) {
+        resultadosDiv.innerHTML = `
+          <div class="soft-card p-6 text-center fade-in">
+            <div class="text-4xl mb-2">🧐</div>
+            <p class="text-base font-semibold" style="color: var(--c-primary)">No encontramos ofertas con esos filtros.</p>
+            <p class="text-sm opacity-80 mt-1">Probá cambiando el Campo, Título o Distrito.</p>
+          </div>
+        `;
       } else {
-        ofertas.forEach(oferta => {
+        ofertasVisibles.forEach(oferta => {
           const card = document.createElement("div");
-          card.className = "bg-white rounded-xl shadow p-4";
+          card.className = "soft-card p-4 md:p-5 fade-in";
+
+          const modalidad = getValueCI(oferta, "Modalidad") || "—";
+          const inscripcionTexto = obtenerFechasInscripcionTexto(oferta);
+          const ofertaEncoded = encodeURIComponent(JSON.stringify(oferta));
+
+          // Entrega del Proyecto: columnas N (desde) y O (hasta)
+          const colEntregaDesde = headers && headers.length > 13 ? headers[13] : null; // N
+          const colEntregaHasta = headers && headers.length > 14 ? headers[14] : null; // O
+          const entregaDesdeRaw = colEntregaDesde ? oferta[colEntregaDesde] : "";
+          const entregaHastaRaw = colEntregaHasta ? oferta[colEntregaHasta] : "";
+          const entregaTexto = (entregaDesdeRaw || entregaHastaRaw)
+            ? `del ${entregaDesdeRaw || "—"} al ${entregaHastaRaw || entregaDesdeRaw || "—"}`
+            : "—";
 
           const textoCompartir =
 `*Unidad Curricular:* ${oferta["Unidad Curricular"]}
 *Institución:* ${oferta["Institución"]}
 *Distrito:* ${oferta["Distrito"]}
 *Carrera:* ${oferta["Carrera"]}
-*Fecha de entrega del Proyecto:* ${oferta["Fecha de entrega del Proyecto"]}
+*Modalidad:* ${modalidad}
+*Entrega del Proyecto:* ${entregaTexto}
 *Módulos:* ${oferta["Módulos"]}
 *Revista:* ${oferta["Revista"]}
-*Día y Horario:* ${oferta["Día y Horario"]}`;
+*Día y Horario:* ${oferta["Día y Horario"]}${inscripcionTexto ? `\n*Fechas de inscripción:* ${inscripcionTexto}` : ""}`;
 
+          
           card.innerHTML = `
-            <h2 class="text-xl font-bold mb-2" style="color: #24496e">${oferta["Unidad Curricular"]}</h2>
-            <p><strong>Institución:</strong> ${oferta["Institución"]}</p>
-            <p><strong>Distrito:</strong> ${oferta["Distrito"]}</p>
-            <p><strong>Carrera:</strong> ${oferta["Carrera"]}</p>
-            <p><strong>Fecha de entrega del Proyecto:</strong> ${oferta["Fecha de entrega del Proyecto"]}</p>
-            <p><strong>Módulos:</strong> ${oferta["Módulos"]}</p>
-            <p><strong>Revista:</strong> ${oferta["Revista"]}</p>
-            <p><strong>Día y Horario:</strong> ${oferta["Día y Horario"]}</p>
-            <div class="mt-4 flex gap-4 flex-wrap">
-              <a href="${oferta["Ubicación"]}" target="_blank" class="bg-[#2d8bba] hover:bg-[#236d92] text-white px-3 py-1 rounded">Ubicación</a>
-              <a href="${oferta["Comunicado"]}" download class="bg-[#4d3069] hover:bg-[#3a2552] text-white px-3 py-1 rounded">Comunicado</a>
-              <button onclick="compartirTexto(\`${textoCompartir}\`)" class="bg-[#da6863] hover:bg-[#b44e4b] text-white px-3 py-1 rounded">Compartir</button>
+            <div class="flex items-start justify-between gap-3">
+              <div class="min-w-0">
+                <h2 class="text-[1.05rem] md:text-xl font-extrabold leading-snug" style="color: var(--c-primary)">
+                  ${oferta["Unidad Curricular"]}
+                </h2>
+                <div class="mt-3 grid gap-2">
+                  <div class="info-row">
+                    <div class="info-ico">🏫</div>
+                    <div class="min-w-0">
+                      <div class="info-title">Institución</div>
+                      <div class="info-value">${oferta["Institución"] || "—"}</div>
+                    </div>
+                  </div>
+
+                  <div class="info-row">
+                    <div class="info-ico">📍</div>
+                    <div class="min-w-0">
+                      <div class="info-title">Distrito</div>
+                      <div class="info-value">${oferta["Distrito"] || "—"}</div>
+                    </div>
+                  </div>
+
+                  <div class="info-row">
+                    <div class="info-ico">🎓</div>
+                    <div class="min-w-0">
+                      <div class="info-title">Carrera</div>
+                      <div class="info-value">${oferta["Carrera"] || "—"}</div>
+                    </div>
+                  </div>
+
+                  <div class="info-row">
+                    <div class="info-ico">🧑‍💻</div>
+                    <div class="min-w-0">
+                      <div class="info-title">Modalidad</div>
+                      <div class="info-value">${modalidad}</div>
+                    </div>
+                  </div>
+                </div>
+              </div>
+
+              <button type="button"
+                onclick="toggleFavorite('${oferta.__id}')"
+                class="shrink-0 w-11 h-11 rounded-2xl grid place-items-center text-2xl leading-none select-none"
+                style="background: rgba(255,255,255,.75); border: 1px solid rgba(36,73,110,.12); box-shadow: 0 12px 24px rgba(36,73,110,.10);"
+                title="Agregar a favoritos"
+                aria-label="Favorito">
+                ${isFavorite(oferta.__id) ? "★" : "☆"}
+              </button>
+            </div>
+
+            <div class="mt-4 grid gap-2">
+              <div class="info-row">
+                <div class="info-ico">🗓️</div>
+                <div class="min-w-0">
+                  <div class="info-title">Entrega del Proyecto e inscripción</div>
+                  <div class="info-value">${entregaTexto}</div>
+                </div>
+              </div>
+
+              <div class="info-row">
+                <div class="info-ico">⏱️</div>
+                <div class="min-w-0">
+                  <div class="info-title">Día y horario</div>
+                  <div class="info-value">${oferta["Día y Horario"]}</div>
+                </div>
+              </div>
+
+              <div class="grid grid-cols-2 gap-2">
+                <div class="soft-card p-3" style="border-radius: 18px; box-shadow: none; background: rgba(255,255,255,.75)">
+                  <div class="text-xs uppercase tracking-wide opacity-70">Módulos</div>
+                  <div class="text-lg font-extrabold" style="color: var(--c-secondary)">${oferta["Módulos"] || "—"}</div>
+                </div>
+                <div class="soft-card p-3" style="border-radius: 18px; box-shadow: none; background: rgba(255,255,255,.75)">
+                  <div class="text-xs uppercase tracking-wide opacity-70">Revista</div>
+                  <div class="text-lg font-extrabold" style="color: var(--c-secondary)">${oferta["Revista"] || "—"}</div>
+                </div>
+              </div>
+            </div>
+
+            <div class="mt-4 grid grid-cols-2 md:grid-cols-4 gap-2">
+              <a href="${oferta["Ubicación"]}" target="_blank"
+                 class="text-center font-bold py-2 rounded-2xl"
+                 style="background: rgba(61,143,176,.16); border: 1px solid rgba(61,143,176,.28); color: var(--c-primary)">
+                 📍 Ubicación
+              </a>
+
+              <a href="${oferta["Comunicado"]}" download
+                 class="text-center font-bold py-2 rounded-2xl"
+                 style="background: rgba(77,48,105,.14); border: 1px solid rgba(77,48,105,.28); color: var(--c-secondary)">
+                 📄 Comunicado
+              </a>
+
+              <button onclick="agendarInscripcion('${ofertaEncoded}')"
+                 class="text-center font-bold py-2 rounded-2xl"
+                 style="background: rgba(36,73,110,.14); border: 1px solid rgba(36,73,110,.28); color: var(--c-primary)">
+                 ⏰ Agregar Recordatorio
+              </button>
+
+              <button onclick="compartirTexto(\`${textoCompartir}\`)"
+                 class="text-center font-bold py-2 rounded-2xl"
+                 style="background: rgba(218,104,99,.16); border: 1px solid rgba(218,104,99,.30); color: rgba(154,54,50,1)">
+                 📲 Compartir
+              </button>
             </div>
           `;
 
@@ -189,6 +823,7 @@
       }
 
       document.getElementById("cafecitoBtnContainer").classList.remove("hidden");
+      updateFavFab();
     }
 
     function compartirTexto(texto) {
@@ -212,5 +847,19 @@
         document.getElementById("contador").textContent = "Error";
       });
   </script>
+
+  <!-- Botón flotante: Favoritos -->
+  <button id="favFab" type="button" onclick="toggleFavoritosView()" data-active="false" style="display:none">
+    <span class="text-2xl leading-none">☆</span>
+    <span class="label">Solo favoritos</span>
+    <span class="pill">★ <span class="count">0</span></span>
+  </button>
+
+  <script>
+    if ("serviceWorker" in navigator) {
+      navigator.serviceWorker.register("./sw.js");
+    }
+  </script>
+
 </body>
 </html>

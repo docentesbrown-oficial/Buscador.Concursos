@@ -1,0 +1,216 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Concursos Vigentes</title>
+
+  <!-- Íconos para navegador y acceso directo -->
+  <link rel="icon" href="icono.png" type="image/png">
+  <link rel="apple-touch-icon" href="icono.png">
+  <link rel="manifest" href="manifest.json">
+
+  <!-- Librerías -->
+  <script src="https://cdn.jsdelivr.net/npm/papaparse@5.4.1/papaparse.min.js"></script>
+  <script src="https://cdn.tailwindcss.com"></script>
+
+  <!-- Estilos -->
+  <style>
+    body {
+      background-color: #f3efdc;
+      color: #4d3069;
+    }
+    select, button {
+      color: #4d3069;
+    }
+    .contador {
+      margin-top: 2rem;
+      font-size: 0.9rem;
+      background-color: #da6863;
+      color: white;
+      display: inline-block;
+      padding: 0.4rem 1rem;
+      border-radius: 12px;
+      box-shadow: 0 2px 5px rgba(0,0,0,0.2);
+    }
+  </style>
+</head>
+<body class="min-h-screen p-4">
+  <div class="max-w-4xl mx-auto">
+    <h1 class="text-3xl font-bold text-center mb-1" style="color: #24496e">Concursos Vigentes</h1>
+    <p class="text-center text-sm mb-6">
+  Desarrollado y optimizado por Docentes Brown. Si tu <strong>carrera o profesión</strong> no aparece en el filtro automáticamente, es porque <strong>no hay</strong> concursos informados.
+  Seguinos en Instagram <a href="https://www.instagram.com/docentesbrown" target="_blank" class="text-blue-600 hover:underline">@docentesbrown</a>.
+    </p>
+    <!-- Filtros -->
+    <div class="space-y-4 mb-6">
+      <select id="campoSelect" class="w-full p-2 rounded border border-[#4d3069]" onchange="actualizarTitulos()">
+        <option value="">Seleccioná un Campo</option>
+      </select>
+
+      <select id="tituloSelect" class="w-full p-2 rounded border border-[#4d3069] hidden" onchange="actualizarDistritos()">
+        <option value="">Seleccioná un Título</option>
+      </select>
+
+      <select id="distritoSelect" class="w-full p-2 rounded border border-[#4d3069] hidden">
+        <option value="">Seleccioná un Distrito</option>
+      </select>
+    </div>
+
+    <button onclick="filtrarOfertas()" class="bg-[#24496e] hover:bg-[#1b3552] text-white font-semibold px-4 py-2 rounded mb-6 w-full">
+      BUSCAR OFERTAS ACTIVAS
+    </button>
+
+    <!-- Resultados -->
+    <div id="resultados" class="space-y-4"></div>
+
+    <!-- Botón de Cafecito -->
+    <div id="cafecitoBtnContainer" class="text-center mt-8 hidden">
+      <a href="https://cafecito.app/docentesbrown" target="_blank" class="inline-flex items-center bg-[#4d3069] hover:bg-[#3a2552] text-white font-bold py-2 px-4 rounded-full">
+        ☕ Invitanos un Cafecito
+      </a>
+    </div>
+
+    <!-- Contador de visitas -->
+    <div class="text-center mt-10">
+      <span class="contador">Docentes que pasaron por acá: <span id="contador">...</span></span>
+    </div>
+  </div>
+
+  <!-- Scripts -->
+  <script>
+    const sheetURL = "https://docs.google.com/spreadsheets/d/e/2PACX-1vRyqgjE9sIIl7fEjrmVzsQo7lCc8w6Nw4EKqcbrqsT-gUDXt_YHn4tHIZJJ7eAEr9JNlJvTW16r7Fyk/pub?output=csv";
+    let datos = [];
+
+    fetch(sheetURL)
+      .then(response => response.text())
+      .then(csvText => {
+        const parsed = Papa.parse(csvText, { header: true });
+        datos = parsed.data.filter(row => typeof row === 'object' && row["Campo"] && row["Título"] && row["Distrito"]);
+        cargarCampos();
+      });
+
+    function cargarCampos() {
+      const campoSelect = document.getElementById("campoSelect");
+      const campos = [...new Set(datos.map(row => row["Campo"]).filter(Boolean))].sort();
+      campos.forEach(campo => {
+        const option = document.createElement("option");
+        option.value = campo;
+        option.textContent = campo;
+        campoSelect.appendChild(option);
+      });
+    }
+
+    function actualizarTitulos() {
+      const campo = document.getElementById("campoSelect").value;
+      const tituloSelect = document.getElementById("tituloSelect");
+      tituloSelect.innerHTML = '<option value="">Seleccioná un Título</option>';
+      document.getElementById("distritoSelect").classList.add("hidden");
+      document.getElementById("tituloSelect").classList.toggle("hidden", !campo);
+
+      if (campo) {
+        const titulos = [...new Set(datos.filter(row => row["Campo"] === campo).map(row => row["Título"]))].sort();
+        titulos.forEach(titulo => {
+          const option = document.createElement("option");
+          option.value = titulo;
+          option.textContent = titulo;
+          tituloSelect.appendChild(option);
+        });
+      }
+    }
+
+    function actualizarDistritos() {
+      const campo = document.getElementById("campoSelect").value;
+      const titulo = document.getElementById("tituloSelect").value;
+      const distritoSelect = document.getElementById("distritoSelect");
+      distritoSelect.innerHTML = '<option value="">Seleccioná un Distrito</option>';
+      distritoSelect.classList.toggle("hidden", !titulo);
+
+      if (titulo) {
+        const distritos = [...new Set(datos.filter(row =>
+          row["Campo"] === campo && row["Título"] === titulo).map(row => row["Distrito"]))].sort();
+        distritos.forEach(distrito => {
+          const option = document.createElement("option");
+          option.value = distrito;
+          option.textContent = distrito;
+          distritoSelect.appendChild(option);
+        });
+      }
+    }
+
+    function filtrarOfertas() {
+      const campo = document.getElementById("campoSelect").value;
+      const titulo = document.getElementById("tituloSelect").value;
+      const distrito = document.getElementById("distritoSelect").value;
+      const resultadosDiv = document.getElementById("resultados");
+      resultadosDiv.innerHTML = "";
+
+      const ofertas = datos.filter(row => {
+        return (!campo || row["Campo"] === campo) &&
+               (!titulo || row["Título"] === titulo) &&
+               (!distrito || row["Distrito"] === distrito);
+      });
+
+      if (ofertas.length === 0) {
+        resultadosDiv.innerHTML = "<p class='text-center text-gray-500'>No se encontraron ofertas activas.</p>";
+      } else {
+        ofertas.forEach(oferta => {
+          const card = document.createElement("div");
+          card.className = "bg-white rounded-xl shadow p-4";
+
+          const textoCompartir =
+`*Unidad Curricular:* ${oferta["Unidad Curricular"]}
+*Institución:* ${oferta["Institución"]}
+*Distrito:* ${oferta["Distrito"]}
+*Carrera:* ${oferta["Carrera"]}
+*Fecha de entrega del Proyecto:* ${oferta["Fecha de entrega del Proyecto"]}
+*Módulos:* ${oferta["Módulos"]}
+*Revista:* ${oferta["Revista"]}
+*Día y Horario:* ${oferta["Día y Horario"]}`;
+
+          card.innerHTML = `
+            <h2 class="text-xl font-bold mb-2" style="color: #24496e">${oferta["Unidad Curricular"]}</h2>
+            <p><strong>Institución:</strong> ${oferta["Institución"]}</p>
+            <p><strong>Distrito:</strong> ${oferta["Distrito"]}</p>
+            <p><strong>Carrera:</strong> ${oferta["Carrera"]}</p>
+            <p><strong>Fecha de entrega del Proyecto:</strong> ${oferta["Fecha de entrega del Proyecto"]}</p>
+            <p><strong>Módulos:</strong> ${oferta["Módulos"]}</p>
+            <p><strong>Revista:</strong> ${oferta["Revista"]}</p>
+            <p><strong>Día y Horario:</strong> ${oferta["Día y Horario"]}</p>
+            <div class="mt-4 flex gap-4 flex-wrap">
+              <a href="${oferta["Ubicación"]}" target="_blank" class="bg-[#2d8bba] hover:bg-[#236d92] text-white px-3 py-1 rounded">Ubicación</a>
+              <a href="${oferta["Comunicado"]}" download class="bg-[#4d3069] hover:bg-[#3a2552] text-white px-3 py-1 rounded">Comunicado</a>
+              <button onclick="compartirTexto(\`${textoCompartir}\`)" class="bg-[#da6863] hover:bg-[#b44e4b] text-white px-3 py-1 rounded">Compartir</button>
+            </div>
+          `;
+
+          resultadosDiv.appendChild(card);
+        });
+      }
+
+      document.getElementById("cafecitoBtnContainer").classList.remove("hidden");
+    }
+
+    function compartirTexto(texto) {
+      const mensaje = encodeURIComponent(texto);
+      const urlWhatsApp = `https://wa.me/?text=${mensaje}`;
+      window.open(urlWhatsApp, "_blank");
+
+      navigator.clipboard.writeText(texto).then(() => {
+        alert("Texto copiado al portapapeles. También se abrió WhatsApp si está disponible.");
+      });
+    }
+
+    // Contador de visitas
+    fetch("https://script.google.com/macros/s/AKfycbxbourZ_L9QNmwuAgMhKSBr3fyOfVcQkSyeCNarDcQgJHugZSktyZ7KlASlYnVm2EkCcg/exec")
+      .then(response => response.text())
+      .then(data => {
+        document.getElementById("contador").textContent = data;
+      })
+      .catch(error => {
+        console.error("Error al obtener el contador:", error);
+        document.getElementById("contador").textContent = "Error";
+      });
+  </script>
+</body>
+</html>

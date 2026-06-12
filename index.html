@@ -11,9 +11,9 @@
   <meta http-equiv="Expires" content="0" />
 
   <!-- Íconos para navegador y acceso directo -->
-  <link rel="icon" href="icono.png?v=2026-06-12-1325" type="image/png">
-  <link rel="apple-touch-icon" href="icono.png?v=2026-06-12-1325">
-  <link rel="manifest" href="manifest.webmanifest?v=2026-06-12-1325">
+  <link rel="icon" href="icono.png?v=2026-06-12-estable" type="image/png">
+  <link rel="apple-touch-icon" href="icono.png?v=2026-06-12-estable">
+  <link rel="manifest" href="manifest.webmanifest?v=2026-06-12-estable">
 
   <!-- Librerías -->
   <script src="https://cdn.jsdelivr.net/npm/papaparse@5.4.1/papaparse.min.js"></script>
@@ -442,7 +442,7 @@
     });
 
     // Versión de la app: cambiala en cada actualización importante para romper caché.
-    window.DB_APP_VERSION = "2026-06-12-1325";
+    window.DB_APP_VERSION = "2026-06-12-estable";
 
     function dbCacheBustedUrl(url) {
       const sep = url.includes("?") ? "&" : "?";
@@ -1045,35 +1045,15 @@ if (ofertasVisibles.length === 0) {
     if ("serviceWorker" in navigator) {
       window.addEventListener("load", () => {
         navigator.serviceWorker
-          .register(`./sw.js?v=${Date.now()}`, { updateViaCache: "none" })
+          // Importante: NO usar Date.now() en la URL del service worker.
+          // Si cambia en cada carga, el navegador cree que hay una versión nueva siempre.
+          .register("./sw.js", { updateViaCache: "none" })
           .then((registration) => {
-            // Pide una revisión de versión cada vez que se abre la app.
+            // Revisa si hay una versión nueva, pero no recarga la página automáticamente.
+            // La persona verá la actualización al volver a entrar o al actualizar manualmente.
             registration.update();
-
-            if (registration.waiting) {
-              registration.waiting.postMessage({ type: "SKIP_WAITING" });
-            }
-
-            registration.addEventListener("updatefound", () => {
-              const newWorker = registration.installing;
-              if (!newWorker) return;
-
-              newWorker.addEventListener("statechange", () => {
-                if (newWorker.state === "installed" && navigator.serviceWorker.controller) {
-                  newWorker.postMessage({ type: "SKIP_WAITING" });
-                }
-              });
-            });
           })
           .catch((error) => console.error("Error al registrar el service worker:", error));
-
-        // Cuando entra una versión nueva del service worker, recarga una sola vez.
-        let refreshing = false;
-        navigator.serviceWorker.addEventListener("controllerchange", () => {
-          if (refreshing) return;
-          refreshing = true;
-          window.location.reload();
-        });
       });
     }
   </script>

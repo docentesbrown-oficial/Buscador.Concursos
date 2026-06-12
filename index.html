@@ -5,11 +5,15 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>Concursos Vigentes</title>
   <meta name="theme-color" content="#24496e" />
+  <!-- Evita que el navegador muestre versiones viejas del HTML -->
+  <meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate" />
+  <meta http-equiv="Pragma" content="no-cache" />
+  <meta http-equiv="Expires" content="0" />
 
   <!-- Íconos para navegador y acceso directo -->
-  <link rel="icon" href="icono.png" type="image/png">
-  <link rel="apple-touch-icon" href="icono.png">
-  <link rel="manifest" href="manifest.webmanifest">
+  <link rel="icon" href="icono.png?v=2026-06-12-1325" type="image/png">
+  <link rel="apple-touch-icon" href="icono.png?v=2026-06-12-1325">
+  <link rel="manifest" href="manifest.webmanifest?v=2026-06-12-1325">
 
   <!-- Librerías -->
   <script src="https://cdn.jsdelivr.net/npm/papaparse@5.4.1/papaparse.min.js"></script>
@@ -176,9 +180,144 @@
     from{ opacity:0; transform: translateY(6px); }
     to{ opacity:1; transform: translateY(0); }
   }
+
+
+  /* Modal talleres Docentes Brown */
+  #talleresModalOverlay{
+    position: fixed;
+    inset: 0;
+    z-index: 10000;
+    display: none;
+    align-items: center;
+    justify-content: center;
+    padding: 18px;
+    background: rgba(44,29,59,.48);
+    backdrop-filter: blur(9px);
+  }
+  #talleresModalOverlay.is-open{
+    display: flex;
+    animation: modalFade .22s ease-out both;
+  }
+  .talleres-modal{
+    position: relative;
+    width: min(92vw, 520px);
+    overflow: hidden;
+    border-radius: 30px;
+    background:
+      radial-gradient(420px 260px at 20% 0%, rgba(61,143,176,.24), transparent 60%),
+      radial-gradient(360px 260px at 100% 15%, rgba(218,104,99,.20), transparent 60%),
+      rgba(255,255,255,.96);
+    border: 1px solid rgba(255,255,255,.58);
+    box-shadow: 0 28px 80px rgba(36,73,110,.30);
+    padding: 26px 22px 22px;
+    transform-origin: center;
+    animation: modalPop .26s cubic-bezier(.2,.8,.2,1) both;
+  }
+  .talleres-modal::before{
+    content:"";
+    position:absolute;
+    inset:0 0 auto 0;
+    height: 7px;
+    background: linear-gradient(90deg, var(--c-primary), var(--c-accent), var(--c-warm));
+  }
+  .talleres-modal__close{
+    position: absolute;
+    top: 13px;
+    right: 13px;
+    width: 38px;
+    height: 38px;
+    border-radius: 999px;
+    display: grid;
+    place-items: center;
+    background: rgba(36,73,110,.10);
+    border: 1px solid rgba(36,73,110,.13);
+    color: var(--c-primary);
+    font-size: 22px;
+    font-weight: 900;
+    line-height: 1;
+  }
+  .talleres-modal__eyebrow{
+    display:inline-flex;
+    align-items:center;
+    gap:8px;
+    padding: 8px 12px;
+    border-radius: 999px;
+    background: rgba(77,48,105,.10);
+    border: 1px solid rgba(77,48,105,.16);
+    color: var(--c-secondary);
+    font-size: .78rem;
+    font-weight: 900;
+    letter-spacing: .08em;
+    text-transform: uppercase;
+  }
+  .talleres-modal__title{
+    margin-top: 16px;
+    font-size: clamp(1.6rem, 7vw, 2.45rem);
+    line-height: .98;
+    font-weight: 950;
+    letter-spacing: -0.04em;
+    color: var(--c-primary);
+  }
+  .talleres-modal__text{
+    margin-top: 14px;
+    font-size: 1.04rem;
+    line-height: 1.45;
+    color: rgba(44,29,59,.88);
+  }
+  .talleres-modal__actions{
+    margin-top: 20px;
+    display: grid;
+    gap: 10px;
+  }
+  .talleres-modal__cta{
+    display: inline-flex;
+    justify-content: center;
+    align-items: center;
+    min-height: 52px;
+    border-radius: 18px;
+    background: linear-gradient(135deg, rgba(36,73,110,1), rgba(61,143,176,1));
+    color: #fff;
+    font-weight: 950;
+    letter-spacing: .05em;
+    text-transform: uppercase;
+    box-shadow: 0 16px 34px rgba(36,73,110,.26);
+  }
+  .talleres-modal__later{
+    color: rgba(44,29,59,.72);
+    font-size: .9rem;
+    font-weight: 700;
+    text-align:center;
+    padding: 8px;
+  }
+  @keyframes modalFade{
+    from{ opacity:0; }
+    to{ opacity:1; }
+  }
+  @keyframes modalPop{
+    from{ opacity:0; transform: translateY(14px) scale(.96); }
+    to{ opacity:1; transform: translateY(0) scale(1); }
+  }
+
 </style>
 </head>
 <body class="min-h-screen">
+
+  <!-- Modal talleres Educación Superior -->
+  <div id="talleresModalOverlay" aria-hidden="true">
+    <div class="talleres-modal" role="dialog" aria-modal="true" aria-labelledby="talleresModalTitle">
+      <button type="button" class="talleres-modal__close" data-talleres-close aria-label="Cerrar aviso">×</button>
+      <div class="talleres-modal__eyebrow">📚 Talleres Docentes Brown</div>
+      <h2 id="talleresModalTitle" class="talleres-modal__title">Concursá mejor preparado</h2>
+      <p class="talleres-modal__text">
+        No te pierdas nuestros talleres para aprender a escribir tu proyecto y concursar en Educación Superior.
+      </p>
+      <div class="talleres-modal__actions">
+        <a class="talleres-modal__cta" href="https://docentesbrown-oficial.github.io/Talleres/" target="_blank" rel="noopener noreferrer">ANOTATE</a>
+        <button type="button" class="talleres-modal__later" data-talleres-close>Seguir buscando concursos</button>
+      </div>
+    </div>
+  </div>
+
   <div class="max-w-4xl mx-auto px-4 pt-4 pb-24">
     <!-- Header / Hero -->
     <header class="soft-card p-5 md:p-7">
@@ -269,6 +408,47 @@
   
 <!-- Scripts -->
   <script>
+
+    // Modal inicial: Talleres Educación Superior
+    document.addEventListener("DOMContentLoaded", () => {
+      const modalOverlay = document.getElementById("talleresModalOverlay");
+      if (!modalOverlay) return;
+
+      const abrirModalTalleres = () => {
+        modalOverlay.classList.add("is-open");
+        modalOverlay.setAttribute("aria-hidden", "false");
+      };
+
+      const cerrarModalTalleres = () => {
+        modalOverlay.classList.remove("is-open");
+        modalOverlay.setAttribute("aria-hidden", "true");
+      };
+
+      modalOverlay.querySelectorAll("[data-talleres-close]").forEach(btn => {
+        btn.addEventListener("click", cerrarModalTalleres);
+      });
+
+      modalOverlay.addEventListener("click", (event) => {
+        if (event.target === modalOverlay) cerrarModalTalleres();
+      });
+
+      document.addEventListener("keydown", (event) => {
+        if (event.key === "Escape" && modalOverlay.classList.contains("is-open")) {
+          cerrarModalTalleres();
+        }
+      });
+
+      abrirModalTalleres();
+    });
+
+    // Versión de la app: cambiala en cada actualización importante para romper caché.
+    window.DB_APP_VERSION = "2026-06-12-1325";
+
+    function dbCacheBustedUrl(url) {
+      const sep = url.includes("?") ? "&" : "?";
+      return `${url}${sep}_v=${encodeURIComponent(window.DB_APP_VERSION)}&_t=${Date.now()}`;
+    }
+
     const sheetURL = "https://docs.google.com/spreadsheets/d/e/2PACX-1vRyqgjE9sIIl7fEjrmVzsQo7lCc8w6Nw4EKqcbrqsT-gUDXt_YHn4tHIZJJ7eAEr9JNlJvTW16r7Fyk/pub?output=csv";
     let datos = [];
     let headers = [];
@@ -505,7 +685,7 @@ function descargarICS(filename, contenido) {
       }
     }
 
-    fetch(sheetURL)
+    fetch(dbCacheBustedUrl(sheetURL), { cache: "no-store" })
       .then(response => response.text())
       .then(csvText => {
         const parsed = Papa.parse(csvText, { header: true });
@@ -791,7 +971,7 @@ if (ofertasVisibles.length === 0) {
               </div>
             </div>
 
-            <div class="mt-4 grid grid-cols-2 md:grid-cols-4 gap-2">
+            <div class="mt-4 grid grid-cols-2 md:grid-cols-5 gap-2">
               <a href="${oferta["Ubicación"]}" target="_blank"
                  class="text-center font-bold py-2 rounded-2xl"
                  style="background: rgba(61,143,176,.16); border: 1px solid rgba(61,143,176,.28); color: var(--c-primary)">
@@ -815,6 +995,12 @@ if (ofertasVisibles.length === 0) {
                  style="background: rgba(218,104,99,.16); border: 1px solid rgba(218,104,99,.30); color: rgba(154,54,50,1)">
                  📲 Compartir
               </button>
+
+              <a href="https://www.sinrecreo.com.ar" target="_blank" rel="noopener noreferrer"
+                 class="col-span-2 md:col-span-1 text-center font-extrabold py-2 rounded-2xl tracking-wide"
+                 style="background: #faf9f6; border: 1px solid rgba(179,92,68,.55); color: #b35c44; box-shadow: 0 10px 24px rgba(179,92,68,.14); text-transform: uppercase;">
+                 conoce SIN RECREO
+              </a>
             </div>
           `;
 
@@ -857,7 +1043,38 @@ if (ofertasVisibles.length === 0) {
 
   <script>
     if ("serviceWorker" in navigator) {
-      navigator.serviceWorker.register("./sw.js");
+      window.addEventListener("load", () => {
+        navigator.serviceWorker
+          .register(`./sw.js?v=${Date.now()}`, { updateViaCache: "none" })
+          .then((registration) => {
+            // Pide una revisión de versión cada vez que se abre la app.
+            registration.update();
+
+            if (registration.waiting) {
+              registration.waiting.postMessage({ type: "SKIP_WAITING" });
+            }
+
+            registration.addEventListener("updatefound", () => {
+              const newWorker = registration.installing;
+              if (!newWorker) return;
+
+              newWorker.addEventListener("statechange", () => {
+                if (newWorker.state === "installed" && navigator.serviceWorker.controller) {
+                  newWorker.postMessage({ type: "SKIP_WAITING" });
+                }
+              });
+            });
+          })
+          .catch((error) => console.error("Error al registrar el service worker:", error));
+
+        // Cuando entra una versión nueva del service worker, recarga una sola vez.
+        let refreshing = false;
+        navigator.serviceWorker.addEventListener("controllerchange", () => {
+          if (refreshing) return;
+          refreshing = true;
+          window.location.reload();
+        });
+      });
     }
   </script>
 
